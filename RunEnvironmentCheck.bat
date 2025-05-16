@@ -4,7 +4,7 @@ REM ─────────────────────────�
 REM  Double-click to download & run check script
 REM ─────────────────────────────────────────
 
-set SCRIPT_URL=https://intranet.yourcorp.local/scripts/check-environment.ps1
+set SCRIPT_URL=https://raw.githubusercontent.com/TakashiSasaki/myboot/refs/heads/master/check-environment.ps1
 
 REM PowerShell でリモートスクリプトを取得・実行
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
