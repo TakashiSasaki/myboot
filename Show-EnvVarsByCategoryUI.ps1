@@ -60,17 +60,17 @@ $descriptions = @{
     'ALLUSERSPROFILE' = 'Directory for application data available to all users.'
     'APPDATA'    = 'Roaming application data folder for the current user.'
     'CommonProgramFiles' = 'Folder for shared program files (e.g., libraries).'
-    'SESSIONNAME' = 'Type of session (Console or RDP).'
-    'LOGONSERVER'= 'The domain controller that authenticated this logon.'
+    'SESSIONNAME' = 'Console or RDP session type.'
+    'LOGONSERVER'= 'Domain controller that authenticated this logon.'
     'NUMBER_OF_PROCESSORS' = 'Number of logical processors on the system.'
     'ProgramData' = 'Directory for application data shared by all users.'
     'LOCALAPPDATA' = 'Local (non-roaming) application data folder.'
     'PUBLIC'     = 'Public user profile folder accessible by all users.'
     'PSModulePath' = 'Paths where PowerShell modules are installed.'
-    'CommonProgramFiles(x86)' = 'Shared files for 32-bit applications on 64-bit Windows.'
-    'CommonProgramW6432'      = 'Shared files for 64-bit applications on 64-bit Windows.'
-    'ProgramFiles(x86)'       = 'Default installation directory for 32-bit programs on 64-bit Windows.'
-    'ProgramW6432'            = 'Default installation directory for 64-bit programs.'
+    'CommonProgramFiles(x86)' = 'Shared files for 32-bit apps on 64-bit Windows.'
+    'CommonProgramW6432'      = 'Shared files for 64-bit apps.'
+    'ProgramFiles(x86)'       = 'Default install directory for 32-bit programs on 64-bit Windows.'
+    'ProgramW6432'            = 'Default install directory for 64-bit programs.'
 }
 
 # 2. Gather environment variables
@@ -149,10 +149,10 @@ foreach ($cat in $categories) {
     $dt.Columns.Add('Name') | Out-Null
     $dt.Columns.Add('Value') | Out-Null
     $envVars | Where-Object { $_.Category -eq $cat } | ForEach-Object {
-        $row = $dt.NewRow()
-        $row['Name'] = $_.Name
-        $row['Value'] = $_.Value
-        $dt.Rows.Add($row)
+        $r = $dt.NewRow()
+        $r['Name'] = $_.Name
+        $r['Value'] = $_.Value
+        $dt.Rows.Add($r)
     }
     $grid.DataSource = $dt
 
@@ -172,27 +172,31 @@ foreach ($cat in $categories) {
     $tab.TabPages.Add($page)
 }
 
-# 6. Keyboard shortcuts for tab navigation
+# 6. Keyboard shortcuts for tab navigation with immediate focus
 $form.Add_KeyDown({
     param($s, $e)
     if ($e.Control -and -not $e.Shift -and $e.KeyCode -eq 'Tab') {
         $tab.SelectedIndex = ($tab.SelectedIndex + 1) % $tab.TabCount
+        $tab.Focus()
         $e.Handled = $true
     }
     elseif ($e.Control -and $e.Shift -and $e.KeyCode -eq 'Tab') {
         $i = $tab.SelectedIndex - 1
         if ($i -lt 0) { $i = $tab.TabCount - 1 }
         $tab.SelectedIndex = $i
+        $tab.Focus()
         $e.Handled = $true
     }
     elseif ($e.Control -and $e.KeyCode -eq 'PageDown') {
         $tab.SelectedIndex = ($tab.SelectedIndex + 1) % $tab.TabCount
+        $tab.Focus()
         $e.Handled = $true
     }
     elseif ($e.Control -and $e.KeyCode -eq 'PageUp') {
         $i = $tab.SelectedIndex - 1
         if ($i -lt 0) { $i = $tab.TabCount - 1 }
         $tab.SelectedIndex = $i
+        $tab.Focus()
         $e.Handled = $true
     }
 })
@@ -200,10 +204,10 @@ $form.Add_KeyDown({
 # 7. Auto-size columns after form is shown
 $form.Add_Shown({
     foreach ($page in $tab.TabPages) {
-        $g = $page.Controls[0]
-        if ($g.ColumnCount -ge 2) {
-            $g.Columns[0].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
-            $g.Columns[1].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
+        $grid = $page.Controls[0]
+        if ($grid.ColumnCount -ge 2) {
+            $grid.Columns[0].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::AllCells
+            $grid.Columns[1].AutoSizeMode = [System.Windows.Forms.DataGridViewAutoSizeColumnMode]::Fill
         }
     }
 })
