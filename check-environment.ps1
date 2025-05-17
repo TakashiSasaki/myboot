@@ -2,7 +2,8 @@
   Filename: check-environment.ps1  
   Description:  
     Detect and display Windows OS version (Win10/Win11),  
-    PowerShell version, and current user's Desktop directory path (using Windows API)  
+    PowerShell version, current user's Desktop directory path,  
+    and environment variables  
 #>
 
 # Get operating system information
@@ -32,3 +33,9 @@ Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor C
 # Get Desktop path using Windows API via .NET
 $desktopPath = [Environment]::GetFolderPath('Desktop')
 Write-Host "User Desktop Directory: $desktopPath" -ForegroundColor Cyan
+
+# Display environment variables
+Write-Host "`n=== Environment Variables ===" -ForegroundColor Yellow
+Get-ChildItem Env: | Sort-Object Name | ForEach-Object {
+    Write-Host ("{0,-30} = {1}" -f $_.Name, $_.Value)
+}
