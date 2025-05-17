@@ -1,6 +1,6 @@
 <#  
   Filename: check-environment.ps1  
-  Description: Detect and display whether this machine is running Windows 10 or Windows 11  
+  Description: Detect and display whether this machine is running Windows 10 or Windows 11, and show PowerShell version  
 #>
 
 # Get operating system information
@@ -26,5 +26,8 @@ else {
     $osName = "Unknown Windows Version ($($os.Version))"
 }
 
-# Output result
+# Output OS version result
 Write-Host "Detected OS Version: $osName" -ForegroundColor Cyan
+
+# Output PowerShell version
+Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Cyan
