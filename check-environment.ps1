@@ -1,6 +1,8 @@
 <#  
   Filename: check-environment.ps1  
-  Description: Detect and display whether this machine is running Windows 10 or Windows 11, and show PowerShell version  
+  Description:  
+    Detect and display Windows OS version (Win10/Win11),  
+    PowerShell version, and current user's Desktop directory path (using Windows API)  
 #>
 
 # Get operating system information
@@ -11,7 +13,6 @@ $version = [version]$os.Version
 
 # Determine OS name
 if ($version.Major -eq 10) {
-    # Windows 10 up through build 21999; Windows 11 starts at build 22000
     if ($version.Build -lt 22000) {
         $osName = 'Windows 10'
     } else {
@@ -19,15 +20,15 @@ if ($version.Major -eq 10) {
     }
 }
 elseif ($version.Major -gt 10) {
-    # Future major versions—treat as Windows 11 or later
     $osName = 'Windows 11 or later'
 }
 else {
     $osName = "Unknown Windows Version ($($os.Version))"
 }
 
-# Output OS version result
 Write-Host "Detected OS Version: $osName" -ForegroundColor Cyan
-
-# Output PowerShell version
 Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)" -ForegroundColor Cyan
+
+# Get Desktop path using Windows API via .NET
+$desktopPath = [Environment]::GetFolderPath('Desktop')
+Write-Host "User Desktop Directory: $desktopPath" -ForegroundColor Cyan
